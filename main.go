@@ -25,5 +25,5 @@ func randomGenerator(size int) string {
 
 func main() {
 	pwd := randomGenerator(16)
-	fmt.Printf("code : \033[1;31m%s\033[0m\n", pwd)
+	fmt.Printf("code : \033[1;32m%s\033[0m\n", pwd)
 }
