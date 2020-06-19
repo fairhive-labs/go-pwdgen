@@ -4,10 +4,15 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 )
 
 //Base character reference
 const Base = "23456789_-.AZERTYUPMKLJHGFDSQWXCVBNazertyupmkjhgfdsqwxcvbn"
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func randomGenerator(size int) string {
 	sb := strings.Builder{}
