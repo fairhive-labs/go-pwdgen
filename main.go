@@ -8,7 +8,7 @@ import (
 )
 
 //Base character reference
-const Base = "23456789_-.AZERTYUPMKLJHGFDSQWXCVBNazertyupmkjhgfdsqwxcvbn"
+const Base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
