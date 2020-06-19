@@ -14,7 +14,8 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func randomGenerator(size int) string {
+//RandomGenerator generate random password
+func RandomGenerator(size int) string {
 	sb := strings.Builder{}
 	for i := 0; i < size; i++ {
 		sb.WriteByte(Base[rand.Intn(len(Base))])
@@ -24,6 +25,6 @@ func randomGenerator(size int) string {
 }
 
 func main() {
-	pwd := randomGenerator(16)
+	pwd := RandomGenerator(16)
 	fmt.Printf("code : \033[1;32m%s\033[0m\n", pwd)
 }
