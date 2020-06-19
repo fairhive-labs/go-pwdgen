@@ -6,9 +6,7 @@ import (
 	"time"
 )
 
-const base = "1234567890"
-
-// const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
+const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
