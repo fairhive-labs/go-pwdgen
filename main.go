@@ -23,7 +23,7 @@ func generate(length int) {
 		l = min
 	}
 
-	fmt.Printf("** PASSWORD GENERATOR**\npassword length : \033[1;33m%v\033[0m\n", l)
+	fmt.Printf("Password length : \033[1;33m%v\033[0m\n", l)
 	pwd := generator.Generate(l)
-	fmt.Printf("code : \033[1;32m%s\033[0m\n", pwd)
+	fmt.Printf("Code : \033[1;32m%s\033[0m\n", pwd)
 }
