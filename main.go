@@ -18,7 +18,7 @@ func main() {
 func generate(length int) {
 	l := length
 	min := generator.MinLength
-	if l <= min {
+	if l < min {
 		fmt.Printf("\033[1;31mprovided length is less than %v, changed to %v !!!\033[0m\n", l, min)
 		l = min
 	}
