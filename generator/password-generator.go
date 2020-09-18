@@ -8,6 +8,9 @@ import (
 
 const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
 
+// MinLength : Minimum Length
+const MinLength = 8
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }

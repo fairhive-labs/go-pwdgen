@@ -1,39 +1,29 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
-	"strconv"
 
 	"./generator"
 )
 
-var size = 16
-
-const minSize = 8
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 
-	if len(os.Args) >= 2 {
-		s, err := strconv.Atoi(os.Args[1])
+	l := flag.Int("l", 16, "password length")
+	flag.Parse()
 
-		check(err)
+	generate(*l)
+}
 
-		switch {
-		case s <= minSize:
-			fmt.Printf("\033[1;31mprovided size is less than %v, changed to %v !!!\033[0m\n", minSize, size)
-		default:
-			size = s
-		}
+func generate(length int) {
+	l := length
+	min := generator.MinLength
+	if l <= min {
+		fmt.Printf("\033[1;31mprovided length is less than %v, changed to %v !!!\033[0m\n", l, min)
+		l = min
 	}
 
-	fmt.Printf("** PASSWORD GENERATOR**\npassword length : \033[1;33m%v\033[0m\n", size)
-	pwd := generator.Generate(size)
+	fmt.Printf("** PASSWORD GENERATOR**\npassword length : \033[1;33m%v\033[0m\n", l)
+	pwd := generator.Generate(l)
 	fmt.Printf("code : \033[1;32m%s\033[0m\n", pwd)
 }
