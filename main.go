@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"pwdgen/generator"
+	"github.com/trendev/pwdgen/generator"
 )
 
 func main() {
