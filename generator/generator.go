@@ -9,7 +9,7 @@ import (
 const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
 
 // MinLength : Minimum Password's Length
-const MinLength = 8
+const MinLength = 10
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
