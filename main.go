@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"./generator"
+	"pwdgen/generator"
 )
 
 func main() {
