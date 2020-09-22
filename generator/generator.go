@@ -17,6 +17,12 @@ func init() {
 
 //Generate generate random password
 func Generate(size int) string {
+
+	// force the minimum length
+	if size < MinLength {
+		size = MinLength
+	}
+
 	sb := strings.Builder{}
 	for i := 0; i < size; i++ {
 		sb.WriteByte(base[rand.Intn(len(base))])
