@@ -44,7 +44,14 @@ func TestGenerate(t *testing.T) {
 	max := 10000
 
 	for i := 0; i < max; i++ {
-		pwdmap[Generate(MinLength)] = true
+		key := Generate(MinLength)
+		_, ok := pwdmap[key]
+		if ok {
+			t.Errorf("TEST conflicts - conflicts detected : password [%s] is already present in the map ", key)
+			t.FailNow()
+		} else {
+			pwdmap[key] = true
+		}
 	}
 
 	if l := len(pwdmap); l != max {
