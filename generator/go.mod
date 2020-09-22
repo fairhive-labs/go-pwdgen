@@ -1,3 +1,3 @@
-module github.com/trendev/pwdgen/generator
+module pwdgen/generator
 
 go 1.15
