@@ -8,14 +8,14 @@ import (
 
 const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
 
-// MinLength : Minimum Length
+// MinLength : Minimum Password's Length
 const MinLength = 8
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-//Generate generate random password
+// Generate random password. If the specified is smaller than the minimum length, default length will be used instead
 func Generate(size int) string {
 
 	// force the minimum length
