@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/trendev/go-pwdgen/generator"
 )
 
 func main() {
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	r := gin.Default()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Request from", r.RemoteAddr)
-		fmt.Fprint(w, "TRENDEV x Heroku")
+	r.GET("/", func(c *gin.Context) {
+		l := 16
+		pwd := generator.Generate(l)
+		c.JSON(200, gin.H{
+			"length":   l,
+			"password": pwd,
+		})
 	})
-	log.Println("👉 Starting server on port: " + port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	log.Fatal(r.Run())
 }
