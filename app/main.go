@@ -28,8 +28,13 @@ func generate(c *gin.Context) {
 	})
 }
 
-func main() {
+func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/", generate)
+	return r
+}
+
+func main() {
+	r := setupRouter()
 	log.Fatal(r.Run())
 }
