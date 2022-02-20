@@ -1,1 +1,1 @@
-web: app/bin/go-pwdgen
+web: ./go-pwdgen
