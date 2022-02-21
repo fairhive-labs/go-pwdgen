@@ -23,7 +23,7 @@ func generate(c *gin.Context) {
 	pwd := generator.Generate(ln)
 
 	c.JSON(http.StatusOK, gin.H{
-		"length":   ln,
+		"length":   len(pwd),
 		"password": pwd,
 	})
 }

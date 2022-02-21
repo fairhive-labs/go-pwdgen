@@ -14,83 +14,46 @@ type response struct {
 }
 
 func TestMainRoute(t *testing.T) {
-	router := setupRouter()
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
-	router.ServeHTTP(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Errorf("%d should be %d", w.Code, http.StatusOK)
-		t.FailNow()
+	tt := []struct {
+		name   string
+		length int
+		url    string
+	}{
+		{"normal", 16, "/"},
+		{"16", 16, fmt.Sprintf("/?l=%d", 16)},
+		{"100", 100, fmt.Sprintf("/?l=%d", 100)},
+		{"32", 32, fmt.Sprintf("/?l=%d", 32)},
+		{"too short 8->10", 10, fmt.Sprintf("/?l=%d", 8)},
+		{"incorrect", 16, fmt.Sprintf("/?l=%s", "foo")},
 	}
 
-	length := 16
-	var r response
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			router := setupRouter()
+			w := httptest.NewRecorder()
+			l := tc.length
+			req, _ := http.NewRequest("GET", tc.url, nil)
+			router.ServeHTTP(w, req)
 
-	json.NewDecoder(w.Body).Decode(&r)
+			if w.Code != http.StatusOK {
+				t.Errorf("%d should be %d", w.Code, http.StatusOK)
+				t.FailNow()
+			}
 
-	if r.Length != length {
-		t.Errorf("length should be %d", length)
-		t.FailNow()
-	}
+			var r response
 
-	if len(r.Password) != length {
-		t.Errorf("%s length should be %d", r.Password, length)
-		t.FailNow()
-	}
+			json.NewDecoder(w.Body).Decode(&r)
 
-}
+			if r.Length != l {
+				t.Errorf("length should be %d", l)
+				t.FailNow()
+			}
 
-func TestMainRouteWith32Length(t *testing.T) {
-	router := setupRouter()
-	w := httptest.NewRecorder()
-	length := 32
-	req, _ := http.NewRequest("GET", fmt.Sprintf("/?l=%d", length), nil)
-	router.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("%d should be %d", w.Code, http.StatusOK)
-		t.FailNow()
-	}
-
-	var r response
-
-	json.NewDecoder(w.Body).Decode(&r)
-
-	if r.Length != length {
-		t.Errorf("length should be %d", length)
-		t.FailNow()
-	}
-
-	if len(r.Password) != length {
-		t.Errorf("%s length should be %d", r.Password, length)
-		t.FailNow()
-	}
-}
-
-func TestMainRouteWithIncompatibleLength(t *testing.T) {
-	router := setupRouter()
-	w := httptest.NewRecorder()
-	length := 16
-	req, _ := http.NewRequest("GET", fmt.Sprintf("/?l=%s", "mistake"), nil)
-	router.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("%d should be %d", w.Code, http.StatusOK)
-		t.FailNow()
-	}
-
-	var r response
-
-	json.NewDecoder(w.Body).Decode(&r)
-
-	if r.Length != length {
-		t.Errorf("length should be %d", length)
-		t.FailNow()
-	}
-
-	if len(r.Password) != length {
-		t.Errorf("%s length should be %d", r.Password, length)
-		t.FailNow()
+			if len(r.Password) != l {
+				t.Errorf("%s length is %d and should be %d", r.Password, len(r.Password), l)
+				t.FailNow()
+			}
+		})
 	}
 }
