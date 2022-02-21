@@ -3,7 +3,7 @@
 
 Password generator written in Go... and deployed on [Heroku](http://pwdgen.trendev.fr)
 
-### generate a 64 length random password 
+### E.g : Generate a 64 length random password 
 > curl -Ls "pwdgen.trendev.fr/?l=64" | jq
 
 ```
