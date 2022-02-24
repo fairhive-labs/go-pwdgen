@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const base = "AZERTYUIOPMLKJHGFDSQWXCVBN_1234567890-.azertyuiopmlkjhgfdsqwxcvbn"
+const base = "^AZERTYUIOPMLKJHGFDSQWXCVBN_#@?1234567890-.!azertyuiopmlkjhgfdsqwxcvbn"
 
 // MinLength : Minimum Password's Length
 const MinLength = 10
