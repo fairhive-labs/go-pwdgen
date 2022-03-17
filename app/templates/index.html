@@ -1,0 +1,40 @@
+<!-- template.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🔑 PWDGEN</title>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 50%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th>
+                Length
+            </th>
+            <th>
+                Password
+            </th>
+        </tr>
+        <tr>
+            <td><code>{{.length}}</code></td>
+            <td><code>{{.password}}</code></td>
+        </tr>
+    </table>
+</body>
+
+</html>
