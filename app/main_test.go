@@ -75,8 +75,6 @@ func TestHTMLRoute(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(w.Body)
-
 	m := map[string]bool{
 		"Length":   false,
 		"Password": false,
