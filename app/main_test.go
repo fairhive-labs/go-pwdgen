@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -13,8 +14,7 @@ type response struct {
 	Password string
 }
 
-func TestMainRoute(t *testing.T) {
-
+func TestJSONRoute(t *testing.T) {
 	tt := []struct {
 		name   string
 		length int
@@ -30,7 +30,7 @@ func TestMainRoute(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			router := setupRouter()
+			router := setupRouter("../templates/*")
 			w := httptest.NewRecorder()
 			l := tc.length
 			req, _ := http.NewRequest("GET", tc.url, nil)
@@ -55,5 +55,47 @@ func TestMainRoute(t *testing.T) {
 				t.FailNow()
 			}
 		})
+	}
+}
+
+func TestHTMLRoute(t *testing.T) {
+	router := setupRouter("../templates/*")
+	w := httptest.NewRecorder()
+	l := 20
+	req, _ := http.NewRequest("GET", fmt.Sprintf("/?l=%d", l), nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("%d should be %d", w.Code, http.StatusOK)
+		t.FailNow()
+	}
+
+	if w.Body.Len() == 0 || w.Body == nil {
+		t.Errorf("response body cannot be empty or nil")
+		t.FailNow()
+	}
+
+	t.Log(w.Body)
+
+	m := map[string]bool{
+		"Length":   false,
+		"Password": false,
+		fmt.Sprintf("<td><code>%d</code></td>", l): false,
+	}
+
+	for l, err := w.Body.ReadString('\n'); err == nil; {
+		for k := range m {
+			if strings.Contains(l, k) {
+				m[k] = true
+			}
+		}
+		l, err = w.Body.ReadString('\n')
+	}
+
+	for k, v := range m {
+		if !v {
+			t.Errorf("response body should contain %q", k)
+			t.FailNow()
+		}
 	}
 }

@@ -12,13 +12,13 @@ import (
 const length = 16
 
 func main() {
-	r := setupRouter()
+	r := setupRouter("templates/*")
 	log.Fatal(r.Run())
 }
 
-func setupRouter() *gin.Engine {
+func setupRouter(tmplPath string) *gin.Engine {
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob(tmplPath)
 	r.GET("/json", generateJSON)
 	r.GET("/", generateHTML)
 	return r
