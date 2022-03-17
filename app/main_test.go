@@ -20,12 +20,12 @@ func TestMainRoute(t *testing.T) {
 		length int
 		url    string
 	}{
-		{"normal", 16, "/"},
-		{"16", 16, fmt.Sprintf("/?l=%d", 16)},
-		{"100", 100, fmt.Sprintf("/?l=%d", 100)},
-		{"32", 32, fmt.Sprintf("/?l=%d", 32)},
-		{"too short 8->10", 10, fmt.Sprintf("/?l=%d", 8)},
-		{"incorrect", 16, fmt.Sprintf("/?l=%s", "foo")},
+		{"normal", 16, "/json"},
+		{"16", 16, fmt.Sprintf("/json?l=%d", 16)},
+		{"100", 100, fmt.Sprintf("/json?l=%d", 100)},
+		{"32", 32, fmt.Sprintf("/json?l=%d", 32)},
+		{"too short 8->10", 10, fmt.Sprintf("/json?l=%d", 8)},
+		{"incorrect", 16, fmt.Sprintf("/json?l=%s", "foo")},
 	}
 
 	for _, tc := range tt {

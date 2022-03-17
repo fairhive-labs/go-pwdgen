@@ -30,7 +30,7 @@ func generate(c *gin.Context) {
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/", generate)
+	r.GET("/json", generate)
 	return r
 }
 
