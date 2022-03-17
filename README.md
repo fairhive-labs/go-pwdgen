@@ -4,7 +4,7 @@
 Password generator written in Go... and deployed on [here](http://pwdgen.trendev.fr)
 
 ### E.g : Generate a 64 length random password 
-> curl -Ls "pwdgen.trendev.fr/?l=64" | jq
+> curl -Ls "pwdgen.trendev.fr/json?l=64" | jq
 
 ```
 {
