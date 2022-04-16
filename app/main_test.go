@@ -30,7 +30,7 @@ func TestJSONRoute(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			router := setupRouter("../templates/*")
+			router := setupRouter()
 			w := httptest.NewRecorder()
 			l := tc.length
 			req, _ := http.NewRequest("GET", tc.url, nil)
@@ -59,7 +59,7 @@ func TestJSONRoute(t *testing.T) {
 }
 
 func TestHTMLRoute(t *testing.T) {
-	router := setupRouter("../templates/*")
+	router := setupRouter()
 	w := httptest.NewRecorder()
 	l := 20
 	req, _ := http.NewRequest("GET", fmt.Sprintf("/?l=%d", l), nil)

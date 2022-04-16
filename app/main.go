@@ -1,6 +1,8 @@
 package main
 
 import (
+	"embed"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,16 +11,20 @@ import (
 	"github.com/trendev/go-pwdgen/generator"
 )
 
+//go:embed templates
+var tfs embed.FS
+
 const length = 16
 
 func main() {
-	r := setupRouter("templates/*")
+	r := setupRouter()
 	log.Fatal(r.Run())
 }
 
-func setupRouter(tmplPath string) *gin.Engine {
+func setupRouter() *gin.Engine {
 	r := gin.Default()
-	r.LoadHTMLGlob(tmplPath)
+	t := template.Must(template.ParseFS(tfs, "templates/*"))
+	r.SetHTMLTemplate(t)
 	r.GET("/json", generateJSON)
 	r.GET("/", generateHTML)
 	return r

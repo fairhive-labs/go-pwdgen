@@ -1,5 +1,5 @@
 build: clean
-	go build -o bin/app -v app/*
+	go build -o bin/app -v app/main.go
 run: build
 	./bin/app
 clean:
