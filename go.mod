@@ -1,9 +1,9 @@
 module github.com/trendev/go-pwdgen
 
-go 1.17
+go 1.18
 
 // +heroku install ./app/...
-// +heroku goVersion 1.17
+// +heroku goVersion 1.18
 
 require github.com/gin-gonic/gin v1.7.7
 
