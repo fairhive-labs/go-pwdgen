@@ -25,13 +25,13 @@ func setupRouter() *gin.Engine {
 	r := gin.Default()
 	t := template.Must(template.ParseFS(tfs, "templates/*"))
 	r.SetHTMLTemplate(t)
-	r.GET("/json", generateJSON)
-	r.GET("/", generateHTML)
+	r.GET("/", generate)
 	return r
 }
 
-func generateJSON(c *gin.Context) {
+func generate(c *gin.Context) {
 	l := c.DefaultQuery("l", strconv.Itoa(length))
+	mime := c.DefaultQuery("mime", "html")
 
 	ln, err := strconv.Atoi(l)
 	if err != nil {
@@ -41,23 +41,13 @@ func generateJSON(c *gin.Context) {
 
 	pwd := generator.Generate(ln)
 
-	c.JSON(http.StatusOK, gin.H{
-		"length":   len(pwd),
-		"password": pwd,
-	})
-}
-
-func generateHTML(c *gin.Context) {
-	l := c.DefaultQuery("l", strconv.Itoa(length))
-
-	ln, err := strconv.Atoi(l)
-	if err != nil {
-		log.Println("incorrect length, converted to", length)
-		ln = length
+	if mime == "json" {
+		c.JSON(http.StatusOK, gin.H{
+			"length":   len(pwd),
+			"password": pwd,
+		})
+		return
 	}
-
-	pwd := generator.Generate(ln)
-
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"length":   len(pwd),
 		"password": pwd,
