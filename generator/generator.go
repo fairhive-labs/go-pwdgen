@@ -9,7 +9,10 @@ import (
 const base = "^AZERTYUIOPMLKJHGFDSQWXCVBN_#@?1234567890-.!azertyuiopmlkjhgfdsqwxcvbn"
 
 // MinLength : Minimum Password's Length
-const MinLength = 10
+const (
+	MinLength = 10
+	MaxLength = 1 << 20
+)
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -19,7 +22,7 @@ func init() {
 func Generate(size int) string {
 
 	// force the minimum length
-	if size < MinLength {
+	if size < MinLength || size > MaxLength {
 		size = MinLength
 	}
 

@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/trendev/go-pwdgen/generator"
 )
 
 type response struct {
@@ -24,7 +26,9 @@ func TestGenerate(t *testing.T) {
 		{"16", 16, fmt.Sprintf("/?l=%d&mime=json", 16)},
 		{"100", 100, fmt.Sprintf("/?l=%d&mime=json", 100)},
 		{"32", 32, fmt.Sprintf("/?l=%d&mime=json", 32)},
-		{"too short 8->10", 10, fmt.Sprintf("/?l=%d&mime=json", 8)},
+		{"min length 8->10", 10, fmt.Sprintf("/?l=%d&mime=json", 8)},
+		{"max length", generator.MaxLength, fmt.Sprintf("/?l=%d&mime=json", generator.MaxLength)},
+		{"max length + 1", generator.MinLength, fmt.Sprintf("/?l=%d&mime=json", generator.MaxLength+1)},
 		{"incorrect", 16, fmt.Sprintf("/?l=%s&mime=json", "foo")},
 	}
 

@@ -26,6 +26,16 @@ func TestGenerateSmallerLength(t *testing.T) {
 	}
 }
 
+// Controls bigger length is changed
+func TestGenerateBiggerLength(t *testing.T) {
+
+	pwd := Generate(MaxLength + 1)
+	if l := len(pwd); l != MinLength {
+		t.Errorf("incorrect length, got %d, want %d", l, MinLength)
+		t.FailNow()
+	}
+}
+
 // Controls generated password's length are correct
 func TestGenerateMultiple(t *testing.T) {
 
