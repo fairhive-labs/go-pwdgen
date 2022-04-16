@@ -64,6 +64,7 @@ func TestGenerate(t *testing.T) {
 	}{
 		{"no mime l 20", 20, "/?l=20"},
 		{"mime l 32", 32, "/?l=32&mime=html"},
+		{"incorrect mime type", 16, "/?mime=foo"},
 	}
 	for _, tc := range tt {
 		t.Run("html_"+tc.name, func(t *testing.T) {
