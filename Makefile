@@ -4,3 +4,5 @@ run: build
 	./bin/app
 clean:
 	rm -rf ./bin
+test:
+	go test -v ./...
