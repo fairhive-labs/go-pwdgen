@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/trendev/go-pwdgen/generator"
+	"github.com/trendev/go-pwdgen/pkg/generator"
 )
 
 //go:embed templates
