@@ -1,10 +1,10 @@
 # go-pwdgen
 <img src="https://go.dev/blog/go-brand/Go-Logo/SVG/Go-Logo_Blue.svg" width="64" height="64">
 
-Password generator written in Go... and deployed [here](http://pwdgen.trendev.fr)
+Password generator written in Go... and deployed [here](http://pwdgen.fairhive.io)
 
 ### E.g : Generate a 64 length random password ; MIME = JSON
-> curl -Ls "pwdgen.trendev.fr/?l=64&mime=json" | jq
+> curl -Ls "pwdgen.fairhive.io/?l=64&mime=json" | jq
 
 ```
 {
@@ -14,7 +14,7 @@ Password generator written in Go... and deployed [here](http://pwdgen.trendev.fr
 ```
 
 ### E.g : Generate a 64 length password ; MIME = HTML
-> curl -Ls "pwdgen.trendev.fr/?l=64"
+> curl -Ls "pwdgen.fairhive.io/?l=64"
 
 ```
 <!DOCTYPE html>

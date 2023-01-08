@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/fairhive-labs/go-pwdgen/pkg/generator"
 	"github.com/gin-gonic/gin"
-	"github.com/trendev/go-pwdgen/pkg/generator"
 )
 
 //go:embed templates

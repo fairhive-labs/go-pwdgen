@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/trendev/go-pwdgen/pkg/generator"
+	"github.com/fairhive-labs/go-pwdgen/pkg/generator"
 )
 
 type response struct {

@@ -1,4 +1,4 @@
-module github.com/trendev/go-pwdgen
+module github.com/fairhive-labs/go-pwdgen
 
 go 1.19
 
