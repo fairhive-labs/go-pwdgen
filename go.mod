@@ -1,9 +1,9 @@
 module github.com/fairhive-labs/go-pwdgen
 
-go 1.20
+go 1.21
 
 // +heroku install ./app/...
-// +heroku goVersion 1.20
+// +heroku goVersion 1.21
 
 require github.com/gin-gonic/gin v1.9.1
 
