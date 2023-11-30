@@ -9,6 +9,7 @@
         html,
         body {
             height: 100%;
+            background-color: black;
         }
 
         .container {
@@ -22,13 +23,18 @@
             font-family: arial, sans-serif;
             border-collapse: collapse;
             font-size: x-large;
+            background-color: lightgray;
         }
 
         td,
         th {
-            border: 1px solid #dddddd;
-            text-align: left;
+            border: 4px solid #dddddd;
+            text-align: center;
             padding: 8px;
+        }
+
+        .length {
+            color: chocolate;
         }
     </style>
 </head>
@@ -45,7 +51,7 @@
                 </th>
             </tr>
             <tr>
-                <td><code>{{.length}}</code></td>
+                <td class="length"><code>{{.length}}</code></td>
                 <td><code>{{.password}}</code></td>
             </tr>
         </table>
