@@ -91,7 +91,7 @@ func TestGenerate(t *testing.T) {
 			m := map[string]bool{
 				"Length":   false,
 				"Password": false,
-				fmt.Sprintf("<td><code>%d</code></td>", l): false,
+				fmt.Sprintf("<td class=\"length\"><code>%d</code></td>", l): false,
 			}
 
 			for l, err := w.Body.ReadString('\n'); err == nil; {
