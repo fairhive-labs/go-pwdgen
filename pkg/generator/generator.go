@@ -3,7 +3,6 @@ package generator
 import (
 	"math/rand"
 	"strings"
-	"time"
 )
 
 const base = "^AZERTYUIOPMLKJHGFDSQWXCVBN_#@?1234567890-.!azertyuiopmlkjhgfdsqwxcvbn"
@@ -13,10 +12,6 @@ const (
 	MinLength = 10
 	MaxLength = 1 << 20
 )
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 // Generate random password. If the specified is smaller than the minimum length, default length will be used instead
 func Generate(size int) string {
