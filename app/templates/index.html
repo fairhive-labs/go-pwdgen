@@ -331,6 +331,34 @@
             50% { opacity: 0; }
         }
 
+        @media (max-width: 560px) {
+            body { padding: 12px; letter-spacing: .02em; }
+            .bar { padding: 9px 12px; gap: 9px; }
+            .bar-title { font-size: 10px; letter-spacing: .1em; }
+            .screen {
+                padding: 20px 14px 22px;
+                font-size: 12.5px;
+            }
+            .banner { padding: 12px 6px; margin-bottom: 18px; }
+            .banner-title { letter-spacing: .28em; font-size: 1.05em; }
+            .banner-sub { letter-spacing: .14em; font-size: .82em; }
+            .payload-value { padding-left: 1.5ch; }
+            .pwd { font-size: 1.05em; }
+            .controls { gap: 12px; }
+            .ctl-len { flex-basis: 100%; }
+            #reforge,
+            #copy {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .screen { font-size: 11px; letter-spacing: .01em; }
+            .banner-title { letter-spacing: .2em; }
+            .tasks .lbl { letter-spacing: 0; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .cursor::after { animation: none; }
             * { transition: none !important; }
