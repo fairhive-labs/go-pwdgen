@@ -220,12 +220,23 @@
         .payload-value {
             margin: 6px 0 2px;
             padding-left: 2.5ch;
-            /* Reserve two lines so the frame keeps a constant height (and stays
-               centered) no matter how long the generated password is. The slider
-               is capped so the password never wraps beyond this at any width. */
-            min-height: 3.7em;
-            display: flex;
-            align-items: center;
+            /* Fixed-height, scrollable output area: the frame keeps a constant
+               height for ANY password length (10..256) — short ones fit, long
+               ones scroll inside this box instead of growing the frame. */
+            height: 5.4em;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: var(--green-dim) transparent;
+        }
+
+        .payload-value::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .payload-value::-webkit-scrollbar-thumb {
+            background: var(--green-dim);
+            border-radius: 4px;
         }
 
         .pwd {
@@ -418,7 +429,7 @@
 
                 <div class="controls">
                     <label class="ctl-len">LEN
-                        <input type="range" id="len-range" min="10" max="64" value="{{.length}}"
+                        <input type="range" id="len-range" min="10" max="256" value="{{.length}}"
                             aria-label="password length">
                         <output id="len-out">{{.length}}</output>
                     </label>
