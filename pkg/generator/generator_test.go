@@ -1,8 +1,22 @@
 package generator
 
 import (
+	"strings"
 	"testing"
 )
+
+// Controls every generated character belongs to the allowed charset
+func TestGenerateCharset(t *testing.T) {
+
+	pwd := Generate(4096) // large sample to exercise the whole byte range
+
+	for i, c := range pwd {
+		if !strings.ContainsRune(base, c) {
+			t.Errorf("TEST charset - character %q at index %d is not part of base", c, i)
+			t.FailNow()
+		}
+	}
+}
 
 // Controls default function
 func TestGenerateBasic(t *testing.T) {
@@ -60,7 +74,7 @@ func TestGenerateDetectConflicts(t *testing.T) {
 	pwdmap := map[string]bool{}
 	max := 10000
 
-	for i := 0; i < max; i++ {
+	for range max {
 		key := Generate(MinLength)
 		_, ok := pwdmap[key]
 		if ok { // controls key is not already there
