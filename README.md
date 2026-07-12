@@ -110,25 +110,26 @@ go run ./cmd -l 32
 go install github.com/fairhive-labs/go-pwdgen/cmd@latest
 ```
 
-On a terminal it plays a little cyberpunk "system override" sequence before
-revealing the password:
+On a terminal it plays a short cyberpunk "forge" sequence before revealing the
+password (all in green — the password included, so it reads as part of the
+interface):
 
 ```text
-C:\> PWDGEN.EXE
 ╔══════════════════════════════════════╗
-║        -- SYSTEM OVERRIDE --         ║
-║            ACCESS GRANTED            ║
+║             -- PWDGEN --             ║
+║         SECURE FORGE ONLINE          ║
 ╚══════════════════════════════════════╝
-> INITIALIZING CSPRNG.......... [OK]
-> HARVESTING ENTROPY........... [OK]
-> BYPASSING WEAK PASSWORDS..... [OK]
-> FORGING CREDENTIAL [32]...... [OK]
-[████████████████████████] 100%
-
+> SEEDING CSPRNG................ [OK]
+> REJECTION-SAMPLING ENTROPY.... [OK]
+> FORGING 32-CHAR KEY........... [OK]
+[████████████████] 100%
 >>> PAYLOAD [32]:
-// THERE IS NO RIGHT PASSWORD, ONLY BETTER TOOLS
-58mhKGFTyiom1.jTIGXO06fas_IiO_uM
+-py4Uk?kf_@A9OiN8VP#_e5aTGkNicsf
+// NO RIGHT PASSWORD, ONLY BETTER TOOLS
 ```
+
+The task lines mirror what the generator actually does — seed the system CSPRNG,
+draw bytes with rejection sampling, and forge an *N*-character key.
 
 ### Flags
 

@@ -19,22 +19,15 @@ const (
 	red    = "\033[1;31m"
 )
 
-// tasks are the fake "boot sequence" steps shown before the payload is revealed.
-var tasks = []string{
-	"INITIALIZING CSPRNG",
-	"HARVESTING ENTROPY",
-	"BYPASSING WEAK PASSWORDS",
-	"FORGING CREDENTIAL",
-}
-
 // theatre carries the two output streams and the animation settings so the
 // rendering is fully testable (no real sleeps, no terminal required).
 type theatre struct {
-	show    io.Writer     // decorative stream (stderr): banner, tasks, progress
-	out     io.Writer     // payload stream (stdout): the bare password, always
-	delay   time.Duration // per-step pause; 0 disables all sleeps
-	color   bool          // wrap decorative output in ANSI green
-	animate bool          // play the boot sequence + progress bar
+	show     io.Writer     // decorative stream (stderr): banner, tasks, progress
+	out      io.Writer     // payload stream (stdout): the password
+	delay    time.Duration // per-step pause; 0 disables all sleeps
+	color    bool          // ANSI green on the decorative stream
+	outColor bool          // ANSI green on the payload (only when stdout is a TTY)
+	animate  bool          // play the boot sequence + progress bar
 }
 
 func main() {
@@ -44,13 +37,14 @@ func main() {
 
 	animate := !*plain && isTerminal(os.Stderr)
 	t := theatre{
-		show:    os.Stderr,
-		out:     os.Stdout,
-		color:   animate,
-		animate: animate,
+		show:     os.Stderr,
+		out:      os.Stdout,
+		color:    animate,
+		outColor: animate && isTerminal(os.Stdout),
+		animate:  animate,
 	}
 	if animate {
-		t.delay = 45 * time.Millisecond
+		t.delay = 18 * time.Millisecond
 	}
 
 	run(t, *length)
@@ -67,7 +61,8 @@ func isTerminal(f *os.File) bool {
 }
 
 // run generates a password and renders it. The decorative show (when enabled)
-// goes to t.show; the bare password always goes to t.out so pipes stay clean.
+// goes to t.show; the password goes to t.out — colored only when stdout is a
+// terminal, bare otherwise so pipes stay clean.
 func run(t theatre, length int) {
 	if length < generator.MinLength {
 		t.warn(fmt.Sprintf("requested length %d is below minimum, forced to %d", length, generator.MinLength))
@@ -81,32 +76,41 @@ func run(t theatre, length int) {
 	pwd := generator.Generate(length)
 
 	if t.animate {
-		fmt.Fprintf(t.show, "\n%s>>> PAYLOAD [%d]:%s\n", t.c(bright), length, t.c(reset))
-		fmt.Fprintf(t.show, "%s// THERE IS NO RIGHT PASSWORD, ONLY BETTER TOOLS%s\n", t.c(green), t.c(reset))
+		fmt.Fprintf(t.show, "%s>>> PAYLOAD [%d]:%s\n", t.c(bright), length, t.c(reset))
 	}
+	t.payload(pwd)
+	if t.animate {
+		fmt.Fprintf(t.show, "%s// NO RIGHT PASSWORD, ONLY BETTER TOOLS%s\n", t.c(green), t.c(reset))
+	}
+}
 
-	// The password is written raw (never colored) so that `pwdgen | pbcopy`
-	// captures exactly the credential and nothing else.
+// payload writes the credential to the payload stream. When stdout is a TTY it
+// is rendered in bright green so it reads as part of the interface; when piped
+// or redirected it is written bare so `pwdgen | pbcopy` captures only the
+// password.
+func (t theatre) payload(pwd string) {
+	if t.outColor {
+		fmt.Fprintf(t.out, "%s%s%s\n", bright, pwd, reset)
+		return
+	}
 	fmt.Fprintln(t.out, pwd)
 }
 
-// banner plays the header, the SYSTEM OVERRIDE box, the task lines and the
-// progress bar on the decorative stream.
+// banner plays the title box, the task lines and the progress bar on the
+// decorative stream.
 func (t theatre) banner(length int) {
-	fmt.Fprintf(t.show, "%sC:\\> PWDGEN.EXE%s\n", t.c(green), t.c(reset))
-
 	const w = 38
 	line := strings.Repeat("═", w)
 	fmt.Fprintf(t.show, "%s╔%s╗\n", t.c(bright), line)
-	fmt.Fprintf(t.show, "║%s║\n", center("-- SYSTEM OVERRIDE --", w))
-	fmt.Fprintf(t.show, "║%s║\n", center("ACCESS GRANTED", w))
+	fmt.Fprintf(t.show, "║%s║\n", center("-- PWDGEN --", w))
+	fmt.Fprintf(t.show, "║%s║\n", center("SECURE FORGE ONLINE", w))
 	fmt.Fprintf(t.show, "╚%s╝%s\n", line, t.c(reset))
 
-	for _, name := range tasks {
-		label := name
-		if name == "FORGING CREDENTIAL" {
-			label = fmt.Sprintf("%s [%d]", name, length)
-		}
+	for _, label := range []string{
+		"SEEDING CSPRNG",
+		"REJECTION-SAMPLING ENTROPY",
+		fmt.Sprintf("FORGING %d-CHAR KEY", length),
+	} {
 		t.task(label)
 	}
 
@@ -121,9 +125,9 @@ func (t theatre) task(label string) {
 	fmt.Fprintf(t.show, "%s[OK]%s\n", t.c(bright), t.c(reset))
 }
 
-// progress renders a bar that fills from 0 to 100%, redrawing in place with \r.
+// progress renders a short bar that fills to 100%, redrawing in place with \r.
 func (t theatre) progress() {
-	const width = 24
+	const width = 16
 	for i := 0; i <= width; i++ {
 		bar := strings.Repeat("█", i) + strings.Repeat("░", width-i)
 		pct := i * 100 / width

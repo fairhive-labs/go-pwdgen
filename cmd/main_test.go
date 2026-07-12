@@ -12,7 +12,7 @@ import (
 // rendering can be asserted on without real sleeps or a terminal.
 func newTheatre(animate bool) (theatre, *bytes.Buffer, *bytes.Buffer) {
 	var show, out bytes.Buffer
-	return theatre{show: &show, out: &out, animate: animate}, &show, &out
+	return theatre{show: &show, out: &out, color: animate, animate: animate}, &show, &out
 }
 
 // password returns the single bare line written to the payload stream.
@@ -33,7 +33,7 @@ func TestRunBare(t *testing.T) {
 	if strings.Contains(out.String(), "\033") {
 		t.Errorf("payload stream must be free of ANSI escapes, got %q", out.String())
 	}
-	if strings.ContainsAny(out.String(), "\n") && strings.Count(out.String(), "\n") != 1 {
+	if strings.Count(out.String(), "\n") != 1 {
 		t.Errorf("payload stream must be a single line, got %q", out.String())
 	}
 	if show.Len() != 0 {
@@ -41,42 +41,44 @@ func TestRunBare(t *testing.T) {
 	}
 }
 
-// Controls the animated mode: the show is rendered and the payload still clean.
-func TestRunAnimated(t *testing.T) {
+// Controls the piped case (stderr is a TTY, stdout is not): the show renders but
+// the payload stays bare so `pwdgen | pbcopy` captures only the password.
+func TestRunAnimatedPipedPayloadIsBare(t *testing.T) {
 	const length = 24
-	tt, show, out := newTheatre(true)
+	tt, show, out := newTheatre(true) // outColor defaults to false = piped stdout
 	run(tt, length)
 
 	if pwd := password(out); len(pwd) != length {
 		t.Fatalf("payload length is %d, want %d (payload=%q)", len(pwd), length, pwd)
 	}
 	if strings.Contains(out.String(), "\033") {
-		t.Errorf("payload stream must be free of ANSI escapes, got %q", out.String())
+		t.Errorf("piped payload must be free of ANSI escapes, got %q", out.String())
 	}
 
-	for _, marker := range []string{"SYSTEM OVERRIDE", "ACCESS GRANTED", "PAYLOAD", "100%"} {
+	for _, marker := range []string{"PWDGEN", "SECURE FORGE ONLINE", "SEEDING CSPRNG", "PAYLOAD", "100%"} {
 		if !strings.Contains(show.String(), marker) {
 			t.Errorf("decorative show should contain %q, got:\n%s", marker, show.String())
 		}
 	}
 }
 
-// Controls that color is applied to the decorative stream only, never leaking
-// ANSI escapes into the payload stream (which must stay pipe-clean).
-func TestRunColorStaysOffPayload(t *testing.T) {
+// Controls the fully-interactive case (both streams are TTYs): the payload is
+// colored so it reads as part of the interface, yet the raw credential is intact.
+func TestRunPayloadColoredOnTTY(t *testing.T) {
 	const length = 16
 	var show, out bytes.Buffer
-	tt := theatre{show: &show, out: &out, animate: true, color: true}
+	tt := theatre{show: &show, out: &out, color: true, outColor: true, animate: true}
 	run(tt, length)
 
-	if !strings.Contains(show.String(), "\033[") {
-		t.Errorf("colored show should contain ANSI escapes, got:\n%s", show.String())
+	if !strings.Contains(out.String(), "\033[") {
+		t.Errorf("interactive payload should be colored, got %q", out.String())
 	}
-	if strings.Contains(out.String(), "\033") {
-		t.Errorf("payload stream must never contain ANSI escapes, got %q", out.String())
-	}
-	if pwd := password(&out); len(pwd) != length {
-		t.Errorf("payload length is %d, want %d", len(pwd), length)
+	// strip the wrapping ANSI codes and confirm the credential itself is intact
+	raw := strings.TrimRight(out.String(), "\n")
+	raw = strings.TrimPrefix(raw, bright)
+	raw = strings.TrimSuffix(raw, reset)
+	if len(raw) != length {
+		t.Errorf("credential length is %d, want %d (raw=%q)", len(raw), length, raw)
 	}
 }
 
