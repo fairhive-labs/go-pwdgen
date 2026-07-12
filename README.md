@@ -124,7 +124,7 @@ magenta** so the credential stands out instead of blending in:
 > FORGING 32-CHAR KEY........... [OK]
 [████████████████] 100%
 >>> PAYLOAD [32]:
--py4Uk?kf_@A9OiN8VP#_e5aTGkNicsf
+    -py4Uk?kf_@A9OiN8VP#_e5aTGkNicsf
 // NO RIGHT PASSWORD, ONLY BETTER TOOLS
 ```
 

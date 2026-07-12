@@ -73,8 +73,8 @@ func TestRunPayloadColoredOnTTY(t *testing.T) {
 	if !strings.Contains(out.String(), "\033[") {
 		t.Errorf("interactive payload should be colored, got %q", out.String())
 	}
-	// strip the wrapping ANSI codes and confirm the credential itself is intact
-	raw := strings.TrimRight(out.String(), "\n")
+	// strip the indent and wrapping ANSI codes, confirm the credential is intact
+	raw := strings.TrimSpace(out.String())
 	raw = strings.TrimPrefix(raw, neon)
 	raw = strings.TrimSuffix(raw, reset)
 	if len(raw) != length {

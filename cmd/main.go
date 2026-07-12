@@ -78,7 +78,7 @@ func run(t theatre, length int) {
 	pwd := generator.Generate(length)
 
 	if t.animate {
-		fmt.Fprintf(t.show, "%s>>> PAYLOAD [%d]:%s\n", t.c(neon), length, t.c(reset))
+		fmt.Fprintf(t.show, "%s>>> PAYLOAD [%d]:%s\n", t.c(green), length, t.c(reset))
 	}
 	t.payload(pwd)
 	if t.animate {
@@ -91,8 +91,12 @@ func run(t theatre, length int) {
 // or redirected it is written bare so `pwdgen | pbcopy` captures only the
 // password.
 func (t theatre) payload(pwd string) {
+	// On a terminal, indent the credential under the "PAYLOAD" label and paint
+	// it neon magenta so it reads as a grouped, highlighted result. When piped
+	// or redirected it is written bare (no indent, no color) so scripts capture
+	// exactly the password.
 	if t.outColor {
-		fmt.Fprintf(t.out, "%s%s%s\n", neon, pwd, reset)
+		fmt.Fprintf(t.out, "    %s%s%s\n", neon, pwd, reset)
 		return
 	}
 	fmt.Fprintln(t.out, pwd)
