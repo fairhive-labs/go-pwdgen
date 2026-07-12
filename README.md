@@ -58,48 +58,26 @@ curl -Ls "pwdgen.poln.org/?l=64&mime=json" | jq
 }
 ```
 
-### Example — HTML
+### HTML (the default) — interactive terminal
+
+Opening the page in a browser (or the default `mime=html`) serves a self-contained
+**cyberpunk CRT terminal** that mirrors the CLI: a green `PWDGEN / SECURE FORGE`
+banner, an animated boot sequence (task lines + progress bar) on load, and the
+password revealed with a decode/scramble effect in **neon magenta**.
+
+It's a usable tool, not just a display:
+
+- **LEN slider** — pick a length (10–128)
+- **RE-FORGE** — fetches a fresh password from the JSON endpoint (no page reload) and replays the reveal
+- **COPY** — copies the password to the clipboard (with a legacy fallback for non-HTTPS hosts)
+
+The page is progressively enhanced: with JavaScript disabled it still renders the
+password server-side, and it honours `prefers-reduced-motion` (animations are
+skipped, the result shows instantly). Everything is inline — no external fonts,
+scripts, or stylesheets.
 
 ```sh
-curl -Ls "pwdgen.poln.org/?l=64"
-```
-
-```html
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>PoLN | 🔑 PWDGEN</title>
-    <style>
-        table {
-          font-family: arial, sans-serif;
-          border-collapse: collapse;
-          width: 50%;
-        }
-
-        td, th {
-          border: 1px solid #dddddd;
-          text-align: left;
-          padding: 8px;
-        }
-
-        </style>
-</head>
-
-<body>
-    <table>
-        <tr>
-            <th>Length</th>
-            <th>Password</th>
-        </tr>
-        <tr>
-            <td class="length"><code>64</code></td>
-            <td><code>-3D8-7MAqq2IAciip7w2426iV18vWhgizaJ?cI?aCkDy#gnxgeAvJ7rGkveccI!I</code></td>
-        </tr>
-    </table>
-</body>
-
-</html>
+open "http://pwdgen.poln.org/?l=64"   # or just visit it in a browser
 ```
 
 ## Command-line tool
