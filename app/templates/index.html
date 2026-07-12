@@ -211,6 +211,12 @@
         .payload-value {
             margin: 6px 0 2px;
             padding-left: 2.5ch;
+            /* Reserve two lines so the frame keeps a constant height (and stays
+               centered) no matter how long the generated password is. The slider
+               is capped so the password never wraps beyond this at any width. */
+            min-height: 3.7em;
+            display: flex;
+            align-items: center;
         }
 
         .pwd {
@@ -399,7 +405,7 @@
 
                 <div class="controls">
                     <label class="ctl-len">LEN
-                        <input type="range" id="len-range" min="10" max="128" value="{{.length}}"
+                        <input type="range" id="len-range" min="10" max="64" value="{{.length}}"
                             aria-label="password length">
                         <output id="len-out">{{.length}}</output>
                     </label>
