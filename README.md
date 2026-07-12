@@ -110,18 +110,50 @@ go run ./cmd -l 32
 go install github.com/fairhive-labs/go-pwdgen/cmd@latest
 ```
 
+On a terminal it plays a little cyberpunk "system override" sequence before
+revealing the password:
+
 ```text
-Password length : 32
-Code : 58mhKGFTyiom1.jTIGXO06fas_IiO_uM
+C:\> PWDGEN.EXE
+╔══════════════════════════════════════╗
+║        -- SYSTEM OVERRIDE --         ║
+║            ACCESS GRANTED            ║
+╚══════════════════════════════════════╝
+> INITIALIZING CSPRNG.......... [OK]
+> HARVESTING ENTROPY........... [OK]
+> BYPASSING WEAK PASSWORDS..... [OK]
+> FORGING CREDENTIAL [32]...... [OK]
+[████████████████████████] 100%
+
+>>> PAYLOAD [32]:
+// THERE IS NO RIGHT PASSWORD, ONLY BETTER TOOLS
+58mhKGFTyiom1.jTIGXO06fas_IiO_uM
 ```
 
-A length below the minimum is reported and clamped:
+### Flags
+
+| Flag     | Default | Description                                             |
+|----------|---------|---------------------------------------------------------|
+| `-l`     | `16`    | Password length (clamped to `[10, 1048576]`)            |
+| `-plain` | `false` | Print only the bare password — no animation, for scripts |
+
+### Scriptable by design
+
+The animation and all decorative output go to **stderr**; the bare password is
+written to **stdout**. The show also auto-disables when output isn't a terminal.
+So piping stays clean — you capture only the credential:
 
 ```sh
-$ go run ./cmd -l 5
-provided length 5 is less than 10, changed to 10 !!!
-Password length : 10
-Code : HbvBkgKJqx
+pwdgen -l 32 | pbcopy        # copies just the password; the show still plays on your terminal
+pwdgen -l 32 2>/dev/null     # bare password only
+pwdgen -plain -l 32          # bare password only, animation forced off
+```
+
+A length below the minimum is reported (on stderr) and clamped to `10`:
+
+```sh
+$ pwdgen -l 5 2>&1 1>/dev/null
+!! requested length 5 is below minimum, forced to 10
 ```
 
 ## Library
