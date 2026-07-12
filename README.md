@@ -58,48 +58,26 @@ curl -Ls "pwdgen.poln.org/?l=64&mime=json" | jq
 }
 ```
 
-### Example — HTML
+### HTML (the default) — interactive terminal
+
+Opening the page in a browser (or the default `mime=html`) serves a self-contained
+**cyberpunk CRT terminal** that mirrors the CLI: a green `PWDGEN / SECURE FORGE`
+banner, an animated boot sequence (task lines + progress bar) on load, and the
+password revealed with a decode/scramble effect in **neon magenta**.
+
+It's a usable tool, not just a display:
+
+- **LEN slider** — pick a length (10–128)
+- **RE-FORGE** — fetches a fresh password from the JSON endpoint (no page reload) and replays the reveal
+- **COPY** — copies the password to the clipboard (with a legacy fallback for non-HTTPS hosts)
+
+The page is progressively enhanced: with JavaScript disabled it still renders the
+password server-side, and it honours `prefers-reduced-motion` (animations are
+skipped, the result shows instantly). Everything is inline — no external fonts,
+scripts, or stylesheets.
 
 ```sh
-curl -Ls "pwdgen.poln.org/?l=64"
-```
-
-```html
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>PoLN | 🔑 PWDGEN</title>
-    <style>
-        table {
-          font-family: arial, sans-serif;
-          border-collapse: collapse;
-          width: 50%;
-        }
-
-        td, th {
-          border: 1px solid #dddddd;
-          text-align: left;
-          padding: 8px;
-        }
-
-        </style>
-</head>
-
-<body>
-    <table>
-        <tr>
-            <th>Length</th>
-            <th>Password</th>
-        </tr>
-        <tr>
-            <td class="length"><code>64</code></td>
-            <td><code>-3D8-7MAqq2IAciip7w2426iV18vWhgizaJ?cI?aCkDy#gnxgeAvJ7rGkveccI!I</code></td>
-        </tr>
-    </table>
-</body>
-
-</html>
+open "http://pwdgen.poln.org/?l=64"   # or just visit it in a browser
 ```
 
 ## Command-line tool
@@ -110,18 +88,51 @@ go run ./cmd -l 32
 go install github.com/fairhive-labs/go-pwdgen/cmd@latest
 ```
 
+On a terminal it plays a short cyberpunk "forge" sequence before revealing the
+password. The interface chrome is green; the payload is highlighted in **neon
+magenta** so the credential stands out instead of blending in:
+
 ```text
-Password length : 32
-Code : 58mhKGFTyiom1.jTIGXO06fas_IiO_uM
+╔══════════════════════════════════════╗
+║             -- PWDGEN --             ║
+║         SECURE FORGE ONLINE          ║
+╚══════════════════════════════════════╝
+> SEEDING CSPRNG................ [OK]
+> REJECTION-SAMPLING ENTROPY.... [OK]
+> FORGING 32-CHAR KEY........... [OK]
+[████████████████] 100%
+>>> PAYLOAD [32]:
+    -py4Uk?kf_@A9OiN8VP#_e5aTGkNicsf
+// NO RIGHT PASSWORD, ONLY BETTER TOOLS
 ```
 
-A length below the minimum is reported and clamped:
+The task lines mirror what the generator actually does — seed the system CSPRNG,
+draw bytes with rejection sampling, and forge an *N*-character key.
+
+### Flags
+
+| Flag     | Default | Description                                             |
+|----------|---------|---------------------------------------------------------|
+| `-l`     | `16`    | Password length (clamped to `[10, 1048576]`)            |
+| `-plain` | `false` | Print only the bare password — no animation, for scripts |
+
+### Scriptable by design
+
+The animation and all decorative output go to **stderr**; the bare password is
+written to **stdout**. The show also auto-disables when output isn't a terminal.
+So piping stays clean — you capture only the credential:
 
 ```sh
-$ go run ./cmd -l 5
-provided length 5 is less than 10, changed to 10 !!!
-Password length : 10
-Code : HbvBkgKJqx
+pwdgen -l 32 | pbcopy        # copies just the password; the show still plays on your terminal
+pwdgen -l 32 2>/dev/null     # bare password only
+pwdgen -plain -l 32          # bare password only, animation forced off
+```
+
+A length below the minimum is reported (on stderr) and clamped to `10`:
+
+```sh
+$ pwdgen -l 5 2>&1 1>/dev/null
+!! requested length 5 is below minimum, forced to 10
 ```
 
 ## Library
