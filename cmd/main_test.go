@@ -75,7 +75,7 @@ func TestRunPayloadColoredOnTTY(t *testing.T) {
 	}
 	// strip the wrapping ANSI codes and confirm the credential itself is intact
 	raw := strings.TrimRight(out.String(), "\n")
-	raw = strings.TrimPrefix(raw, bright)
+	raw = strings.TrimPrefix(raw, neon)
 	raw = strings.TrimSuffix(raw, reset)
 	if len(raw) != length {
 		t.Errorf("credential length is %d, want %d (raw=%q)", len(raw), length, raw)

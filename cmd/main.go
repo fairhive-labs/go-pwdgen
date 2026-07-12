@@ -11,11 +11,13 @@ import (
 	"github.com/fairhive-labs/go-pwdgen/pkg/generator"
 )
 
-// ANSI styling.
+// ANSI styling. The interface chrome is green; the payload is bold neon magenta
+// so the credential stands out instead of blending into the green.
 const (
 	reset  = "\033[0m"
 	green  = "\033[0;32m"
 	bright = "\033[1;32m"
+	neon   = "\033[1;95m"
 	red    = "\033[1;31m"
 )
 
@@ -76,7 +78,7 @@ func run(t theatre, length int) {
 	pwd := generator.Generate(length)
 
 	if t.animate {
-		fmt.Fprintf(t.show, "%s>>> PAYLOAD [%d]:%s\n", t.c(bright), length, t.c(reset))
+		fmt.Fprintf(t.show, "%s>>> PAYLOAD [%d]:%s\n", t.c(neon), length, t.c(reset))
 	}
 	t.payload(pwd)
 	if t.animate {
@@ -90,7 +92,7 @@ func run(t theatre, length int) {
 // password.
 func (t theatre) payload(pwd string) {
 	if t.outColor {
-		fmt.Fprintf(t.out, "%s%s%s\n", bright, pwd, reset)
+		fmt.Fprintf(t.out, "%s%s%s\n", neon, pwd, reset)
 		return
 	}
 	fmt.Fprintln(t.out, pwd)

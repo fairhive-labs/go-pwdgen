@@ -111,8 +111,8 @@ go install github.com/fairhive-labs/go-pwdgen/cmd@latest
 ```
 
 On a terminal it plays a short cyberpunk "forge" sequence before revealing the
-password (all in green — the password included, so it reads as part of the
-interface):
+password. The interface chrome is green; the payload is highlighted in **neon
+magenta** so the credential stands out instead of blending in:
 
 ```text
 ╔══════════════════════════════════════╗
