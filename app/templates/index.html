@@ -58,6 +58,15 @@
             z-index: 9;
         }
 
+        /* Full-width wrapper so the terminal's width is viewport-based and does
+           NOT shrink-wrap to its content (which made the frame resize/move when
+           the password length changed). */
+        main {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
         .terminal {
             width: min(680px, 100%);
             background: var(--panel);
@@ -238,23 +247,33 @@
         }
 
         .controls {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px;
-            margin-top: 26px;
+            margin-top: 24px;
             padding-top: 18px;
             border-top: 1px solid var(--edge);
         }
 
+        /* Row 1: the length slider (always full width). */
         .ctl-len {
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex: 1 1 220px;
+            gap: 12px;
             color: var(--dim);
             font-size: 12px;
             letter-spacing: .15em;
+        }
+
+        /* Row 2: the action buttons, always centered beneath the slider. */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .actions button {
+            flex: 1 1 0;
+            max-width: 200px;
+            text-align: center;
         }
 
         #len-out {
@@ -350,13 +369,7 @@
             .banner-sub { letter-spacing: .14em; font-size: .82em; }
             .payload-value { padding-left: 1.5ch; }
             .pwd { font-size: 1.05em; }
-            .controls { gap: 12px; }
-            .ctl-len { flex-basis: 100%; }
-            #reforge,
-            #copy {
-                flex: 1;
-                text-align: center;
-            }
+            .actions button { max-width: none; }
         }
 
         @media (max-width: 380px) {
@@ -409,8 +422,10 @@
                             aria-label="password length">
                         <output id="len-out">{{.length}}</output>
                     </label>
-                    <button id="reforge" type="button">▮ Re-forge</button>
-                    <button id="copy" type="button">⧉ Copy</button>
+                    <div class="actions">
+                        <button id="reforge" type="button">▮ Re-forge</button>
+                        <button id="copy" type="button">⧉ Copy</button>
+                    </div>
                 </div>
             </div>
         </section>
