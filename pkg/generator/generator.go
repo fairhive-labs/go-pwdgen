@@ -34,11 +34,9 @@ func Generate(size int) string {
 	// of them are rejected, so refill as needed until size chars are produced.
 	buf := make([]byte, size)
 	for sb.Len() < size {
-		// crypto/rand.Read never returns an error on supported platforms;
-		// a failure here means the system CSPRNG is unavailable, so panic.
-		if _, err := rand.Read(buf); err != nil {
-			panic(err)
-		}
+		// crypto/rand.Read never returns an error and always fills buf; if the
+		// system CSPRNG is unavailable it crashes the program instead.
+		rand.Read(buf)
 		for _, b := range buf {
 			if int(b) >= threshold {
 				continue // rejected to keep the distribution uniform
