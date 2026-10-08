@@ -27,7 +27,7 @@ any value outside that range falls back to the minimum of `10`.
 
 ## Requirements
 
-- Go **1.26** or later
+- Go **1.27** or later
 
 ## HTTP API
 

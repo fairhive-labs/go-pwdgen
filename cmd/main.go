@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -33,16 +34,31 @@ type theatre struct {
 }
 
 func main() {
-	length := flag.Int("l", 16, "password length")
-	plain := flag.Bool("plain", false, "output the bare password only (no animation), for scripting")
-	flag.Parse()
+	if err := cli(os.Args[1:], os.Stdout, os.Stderr); err != nil {
+		os.Exit(2)
+	}
+}
 
-	animate := !*plain && isTerminal(os.Stderr)
+// cli parses args and renders a password on the given streams. It is main
+// without the process-level side effects, so it can be exercised in tests.
+func cli(args []string, stdout, stderr *os.File) error {
+	fs := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	length := fs.Int("l", 16, "password length")
+	plain := fs.Bool("plain", false, "output the bare password only (no animation), for scripting")
+	if err := fs.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return nil
+		}
+		return err
+	}
+
+	animate := !*plain && isTerminal(stderr)
 	t := theatre{
-		show:     os.Stderr,
-		out:      os.Stdout,
+		show:     stderr,
+		out:      stdout,
 		color:    animate,
-		outColor: animate && isTerminal(os.Stdout),
+		outColor: animate && isTerminal(stdout),
 		animate:  animate,
 	}
 	if animate {
@@ -50,6 +66,7 @@ func main() {
 	}
 
 	run(t, *length)
+	return nil
 }
 
 // isTerminal reports whether f is attached to a character device (a TTY) rather

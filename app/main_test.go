@@ -112,3 +112,110 @@ func TestGenerate(t *testing.T) {
 		})
 	}
 }
+
+// Controls the JSON payload: content type, exact keys, and a password that
+// changes on every request.
+func TestGenerateJSONContract(t *testing.T) {
+	router := setupRouter()
+	seen := map[string]bool{}
+
+	for range 5 {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/?l=24&mime=json", nil)
+		router.ServeHTTP(w, req)
+
+		if ct := w.Header().Get("Content-Type"); !strings.HasPrefix(ct, "application/json") {
+			t.Fatalf("incorrect content type, got %q, want application/json", ct)
+		}
+
+		var body map[string]any
+		if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
+			t.Fatalf("response is not valid JSON: %v", err)
+		}
+		if len(body) != 2 {
+			t.Errorf("response should only hold length and password, got %v", body)
+		}
+		pwd, ok := body["password"].(string)
+		if !ok || len(pwd) != 24 {
+			t.Fatalf("incorrect password %v, want a 24-char string", body["password"])
+		}
+		if l, ok := body["length"].(float64); !ok || l != 24 {
+			t.Errorf("incorrect length %v, want 24", body["length"])
+		}
+		if seen[pwd] {
+			t.Errorf("password %q was served twice", pwd)
+		}
+		seen[pwd] = true
+	}
+}
+
+// Controls the HTML page embeds the generated password.
+func TestGenerateHTMLContract(t *testing.T) {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/?l=20", nil)
+	setupRouter().ServeHTTP(w, req)
+
+	if ct := w.Header().Get("Content-Type"); !strings.HasPrefix(ct, "text/html") {
+		t.Errorf("incorrect content type, got %q, want text/html", ct)
+	}
+	if !strings.Contains(w.Body.String(), `data-length="20"`) {
+		t.Errorf("page should expose the password length")
+	}
+}
+
+// Controls lengths that are not usable fall back instead of failing.
+func TestGenerateFallbackLength(t *testing.T) {
+	tt := []struct {
+		name   string
+		query  string
+		length int
+	}{
+		{"negative", "l=-5", generator.MinLength},
+		{"zero", "l=0", generator.MinLength},
+		{"empty", "l=", length},
+		{"float", "l=12.5", length},
+		{"overflow", "l=99999999999999999999", length},
+	}
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", "/?mime=json&"+tc.query, nil)
+			setupRouter().ServeHTTP(w, req)
+
+			if w.Code != http.StatusOK {
+				t.Fatalf("%d should be %d", w.Code, http.StatusOK)
+			}
+			var r response
+			if err := json.NewDecoder(w.Body).Decode(&r); err != nil {
+				t.Fatalf("response is not valid JSON: %v", err)
+			}
+			if r.Length != tc.length || len(r.Password) != tc.length {
+				t.Errorf("incorrect length, got %d (%q), want %d", r.Length, r.Password, tc.length)
+			}
+		})
+	}
+}
+
+// Controls only GET / is served.
+func TestRoutes(t *testing.T) {
+	tt := []struct {
+		method string
+		path   string
+		code   int
+	}{
+		{"GET", "/", http.StatusOK},
+		{"GET", "/unknown", http.StatusNotFound},
+		{"POST", "/", http.StatusNotFound},
+	}
+	for _, tc := range tt {
+		t.Run(tc.method+" "+tc.path, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest(tc.method, tc.path, nil)
+			setupRouter().ServeHTTP(w, req)
+
+			if w.Code != tc.code {
+				t.Errorf("got %d, want %d", w.Code, tc.code)
+			}
+		})
+	}
+}

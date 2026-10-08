@@ -91,3 +91,74 @@ func TestGenerateDetectConflicts(t *testing.T) {
 	}
 
 }
+
+// Controls the length bounds: both ends are honored, anything outside falls
+// back to MinLength.
+func TestGenerateBounds(t *testing.T) {
+	tt := []struct {
+		name string
+		size int
+		want int
+	}{
+		{"negative", -1, MinLength},
+		{"zero", 0, MinLength},
+		{"just below min", MinLength - 1, MinLength},
+		{"min", MinLength, MinLength},
+		{"just above min", MinLength + 1, MinLength + 1},
+		{"max", MaxLength, MaxLength},
+		{"just above max", MaxLength + 1, MinLength},
+	}
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			if l := len(Generate(tc.size)); l != tc.want {
+				t.Errorf("Generate(%d) has length %d, want %d", tc.size, l, tc.want)
+			}
+		})
+	}
+}
+
+// Controls the charset has no duplicate, otherwise some characters would be
+// drawn more often than others.
+func TestBaseHasNoDuplicate(t *testing.T) {
+	seen := map[rune]bool{}
+	for _, c := range base {
+		if seen[c] {
+			t.Errorf("character %q appears more than once in base", c)
+		}
+		seen[c] = true
+	}
+}
+
+// Controls the rejection threshold is the largest multiple of len(base) that
+// fits in a byte.
+func TestThreshold(t *testing.T) {
+	if threshold%len(base) != 0 {
+		t.Errorf("threshold %d is not a multiple of len(base) %d", threshold, len(base))
+	}
+	if threshold > 256 || threshold+len(base) <= 256 {
+		t.Errorf("threshold %d is not the largest multiple of %d within a byte", threshold, len(base))
+	}
+}
+
+// Controls every character of base is reachable and none dominates: with
+// MaxLength draws each one is expected about 15000 times.
+func TestGenerateDistribution(t *testing.T) {
+	counts := map[rune]int{}
+	for _, c := range Generate(MaxLength) {
+		counts[c]++
+	}
+
+	want := float64(MaxLength) / float64(len(base))
+	for _, c := range base {
+		n := float64(counts[c])
+		if n < want*0.9 || n > want*1.1 {
+			t.Errorf("character %q drawn %d times, want about %.0f", c, counts[c], want)
+		}
+	}
+}
+
+func BenchmarkGenerate(b *testing.B) {
+	for b.Loop() {
+		Generate(64)
+	}
+}
